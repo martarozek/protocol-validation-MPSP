@@ -1,0 +1,33 @@
+sort SH = struct h_outer | h_middle | h_initial;
+sort SV = struct v_lowest | v_below | v_mid | v_above | v_upper;
+sort DV = struct left | right; 
+sort DH = struct up | down;
+sort BTN = struct b_up | b_down | b_stop | b_reset | b_resume | b_undock; 
+
+act
+  s_horizontal:  SH;
+  s_vertical:    SV;
+  m_vertical:    DV;
+  m_horizontal:  DH;
+  m_vertical_stop, m_horizontal_stop;
+  b_vertical, ub_vertical, b_horizontal, ub_horizontal;
+  s_dock, s_undock, s_nop;
+
+proc
+  S = ((sum h:SH. s_horizontal(h)) + (sum v:SV. s_vertical(v)) + s_dock + s_undock + s_nop).S;
+  
+  MV = (sum d:DV. m_vertical(d)).m_vertical_stop.MV;
+  MH = (sum d:DH. m_horizontal(d)).m_horizontal_stop.MH;
+
+  BV = ub_vertical.b_vertical.BV;
+  BH = ub_horizontal.b_horizontal.BH;
+
+  C_UNC = c_dock.D_UNC;
+  MOVE_UP = but_press(b_up).(START_MOVING_UP + DONT_MOVE_UP);
+  START_MOVING_UP = sum p:(SV - {v_upper}).cs_vertical(p).cub_vertical.cm_vertical(up).but_release(b_up).cm_vertical_stop.cb_vertical;
+  DONT_MOVE_UP = cs_vertical(v_upper).but_release(b_up);
+  MOVE_DOWN = but_press(b_down).cub_vertical.cm_vertical(down).but_release(b_down).cm_vertical_stop.cb_vertical;
+  D_UNC = (MOVE_UP + MOVE_DOWN).D_UNC + but_press(b_reset).but_release(b_reset)
+
+
+  init
