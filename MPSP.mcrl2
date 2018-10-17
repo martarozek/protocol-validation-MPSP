@@ -1,17 +1,33 @@
 sort SH = struct h_outer | h_middle | h_initial;
 sort SV = struct v_lowest | v_below | v_mid | v_above | v_upper;
-sort DV = struct left | right; 
-sort DH = struct up | down;
+sort DH = struct left | right; 
+sort DV = struct up | down;
 sort BTN = struct b_up | b_down | b_stop | b_reset | b_resume | b_undock; 
 
 act
   s_horizontal:  SH;
+  cs_horizontal: SH;
   s_vertical:    SV;
+  cs_vertical:   SV;
   m_vertical:    DV;
+  cm_vertical:   DV;
   m_horizontal:  DH;
+  cm_horizontal: DH;
   m_vertical_stop, m_horizontal_stop;
+  cm_vertical_stop, cm_horizontal_stop;
   b_vertical, ub_vertical, b_horizontal, ub_horizontal;
+  cb_vertical, cub_vertical, cb_horizontal, cub_horizontal;
   s_dock, s_undock, s_nop;
+  cs_dock, cs_undock, cs_nop;
+  but_press, but_release:     BTN;
+
+  sense_horizontal: SH;
+  sense_vertical:   SV;
+  move_horizontal:  DH;
+  move_vertical:    DV;
+  dock, undock, nop;
+  motor_vertical_stop, motor_horizontal_stop;
+  brake_vertical, unbrake_vertical, brake_horizontal, unbrake_horizontal;
 
 proc
   S = ((sum h:SH. s_horizontal(h)) + (sum v:SV. s_vertical(v)) + s_dock + s_undock + s_nop).S;
@@ -22,12 +38,47 @@ proc
   BV = ub_vertical.b_vertical.BV;
   BH = ub_horizontal.b_horizontal.BH;
 
-  C_UNC = c_dock.D_UNC;
-  MOVE_UP = but_press(b_up).(START_MOVING_UP + DONT_MOVE_UP);
-  START_MOVING_UP = sum p:(SV - {v_upper}).cs_vertical(p).cub_vertical.cm_vertical(up).but_release(b_up).cm_vertical_stop.cb_vertical;
-  DONT_MOVE_UP = cs_vertical(v_upper).but_release(b_up);
-  MOVE_DOWN = but_press(b_down).cub_vertical.cm_vertical(down).but_release(b_down).cm_vertical_stop.cb_vertical;
-  D_UNC = (MOVE_UP + MOVE_DOWN).D_UNC + but_press(b_reset).but_release(b_reset)
+  C_UNC = cs_dock.D_UNC;
+  MOVE_VERTICAL(direction: DV) = (direction == up) ->but_press(b_up).(START_MOVING_VERTICAL(v_upper, b_up, up) + DONT_MOVE_VERTICAL(v_upper, b_up)) <> but_press(b_down).(START_MOVING_VERTICAL(v_lowest, b_down, down) + DONT_MOVE_VERTICAL(v_lowest, b_down));
 
+  START_MOVING_VERTICAL(s_position: SV, button: BTN, direction: DV) = sum p:SV.(p != s_position) -> cs_vertical(p).cub_vertical.cm_vertical(direction).(AUTO_STOP(s_position, button, direction) + MANUAL_STOP_VERTICAL(button));
 
-  init
+  MANUAL_STOP_VERTICAL(button: BTN) = but_release(button).cm_vertical_stop.cb_vertical;
+
+  AUTO_STOP(s_position: SV, button: BTN, direction: DV) = sum p:SV.(p == s_position) -> cs_vertical(s_position).cm_vertical_stop.cb_vertical.but_release(button) <> cs_vertical(p).(AUTO_STOP(s_position, button, direction) + MANUAL_STOP_VERTICAL(button)) + cs_vertical(s_position).cm_vertical_stop.cb_vertical.but_release(button);
+
+  DONT_MOVE_VERTICAL(s_position: SV, button: BTN) = cs_vertical(s_position).but_release(button);
+
+  D_UNC = (MOVE_VERTICAL(up) + MOVE_VERTICAL(down)).D_UNC + but_press(b_reset).but_release(b_reset).D_CAL;
+
+  D_CAL = but_press(b_reset).but_release(b_reset).D_UNC + cs_undock.UD_CAL;
+
+  UD_CAL = ;
+
+  init hide({s_horizontal, s_vertical, m_vertical, m_horizontal, m_vertical_stop, m_horizontal_stop, b_vertical, ub_vertical, b_horizontal, ub_horizontal, s_dock, s_undock, s_nop, cs_horizontal, cs_vertical, cm_vertical, cm_horizontal, cm_vertical_stop, cm_horizontal_stop, cb_vertical, cub_vertical, cb_horizontal, cub_horizontal, cs_dock, cs_undock, cs_nop},
+  allow({
+  sense_horizontal,
+  sense_vertical,
+  move_horizontal,
+  move_vertical,
+  dock, undock, nop,
+  motor_vertical_stop, motor_horizontal_stop,
+  brake_vertical, unbrake_vertical, brake_horizontal, unbrake_horizontal,
+  but_press, but_release
+  },
+  comm({
+  s_horizontal|cs_horizontal->sense_horizontal,
+  s_vertical|cs_vertical->sense_vertical,
+  m_horizontal|cm_horizontal->move_horizontal,
+  m_vertical|cm_vertical->move_vertical,
+  s_dock|cs_dock->dock,
+  s_undock|cs_undock->undock,
+  s_nop|cs_nop->nop,
+  m_vertical_stop|cm_vertical_stop->motor_vertical_stop,
+  m_horizontal_stop|cm_horizontal_stop->motor_horizontal_stop,
+  b_vertical|cb_vertical->brake_vertical,
+  ub_vertical|cub_vertical -> unbrake_vertical,
+  b_horizontal|cb_horizontal->brake_horizontal,
+  ub_horizontal|cub_horizontal -> unbrake_horizontal
+   },
+  C_UNC || BV || BH || MV || MH || S)));
