@@ -1,0 +1,2 @@
+[true*.sense_vertical(v_upper).brake_vertical.move_vertical(up)] false &&
+[true*.sense_vertical(v_lowest).brake_vertical.move_vertical(down)] false
