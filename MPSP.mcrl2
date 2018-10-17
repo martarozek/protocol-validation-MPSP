@@ -20,12 +20,13 @@ act
   s_dock, s_undock, s_nop;
   cs_dock, cs_undock, cs_nop;
   but_press, but_release:     BTN;
+  d_undock, cd_undock;
 
   sense_horizontal: SH;
   sense_vertical:   SV;
   move_horizontal:  DH;
   move_vertical:    DV;
-  dock, undock, nop;
+  sense_dock, sense_undock, undock, nop;
   motor_vertical_stop, motor_horizontal_stop;
   brake_vertical, unbrake_vertical, brake_horizontal, unbrake_horizontal;
 
@@ -35,13 +36,15 @@ proc
   MV = (sum d:DV. m_vertical(d)).m_vertical_stop.MV;
   MH = (sum d:DH. m_horizontal(d)).m_horizontal_stop.MH;
 
+  D = d_undock.D;
+
   BV = ub_vertical.b_vertical.BV;
   BH = ub_horizontal.b_horizontal.BH;
 
   C_UNC = cs_dock.D_UNC;
   MOVE_VERTICAL(direction: DV) = (direction == up) ->but_press(b_up).(START_MOVING_VERTICAL(v_upper, b_up, up) + DONT_MOVE_VERTICAL(v_upper, b_up)) <> but_press(b_down).(START_MOVING_VERTICAL(v_lowest, b_down, down) + DONT_MOVE_VERTICAL(v_lowest, b_down));
 
-  START_MOVING_VERTICAL(s_position: SV, button: BTN, direction: DV) = sum p:SV.(p != s_position) -> cs_vertical(p).cub_vertical.cm_vertical(direction).(AUTO_STOP_VERTICAL(s_position, button, direction) + MANUAL_STOP_VERTICAL(button));
+  START_MOVING_VERTICAL(s_position: SV, button: BTN, direction: DV) = sum p:SV.(p != s_position) -> cs_vertical(p).cub_vertical.cm_vertical(direction).(AUTO_STOP_VERTICAL(s_position, button, direction) + MANUAL_STOP_VERTICAL(button))<> cs_vertical(p).but_release(button);
 
   MANUAL_STOP_VERTICAL(button: BTN) = but_release(button).cm_vertical_stop.cb_vertical;
 
@@ -53,7 +56,7 @@ proc
 
   MOVE_HORIZONTAL(direction: DH) = (direction == inwards) ->but_press(b_up).(START_MOVING_HORIZONTAL(h_outer, b_up, inwards) + DONT_MOVE_HORIZONTAL(h_outer, b_up)) <> but_press(b_down).(START_MOVING_HORIZONTAL(h_initial, b_down, outwards) + DONT_MOVE_HORIZONTAL(h_initial, b_down));
 
-  START_MOVING_HORIZONTAL(s_position: SH, button: BTN, direction: DH) = sum p:SH.(p != s_position) -> cs_horizontal(p).cub_horizontal.cm_horizontal(direction).(AUTO_STOP_HORIZONTAL(s_position, button, direction) + MANUAL_STOP_HORIZONTAL(button));
+  START_MOVING_HORIZONTAL(s_position: SH, button: BTN, direction: DH) = sum p:SH.(p != s_position) -> cs_horizontal(p).cub_horizontal.cm_horizontal(direction).(AUTO_STOP_HORIZONTAL(s_position, button, direction) + MANUAL_STOP_HORIZONTAL(button)) <> cs_horizontal(p).but_release(button);
 
   MANUAL_STOP_HORIZONTAL(button: BTN) = but_release(button).cm_horizontal_stop.cb_horizontal;
 
@@ -73,19 +76,26 @@ proc
 
   D_UNC = (MOVE_VERTICAL(up) + MOVE_VERTICAL(down)).D_UNC + but_press(b_reset).but_release(b_reset).D_CAL;
 
-  D_CAL = but_press(b_reset).but_release(b_reset).D_UNC + cs_undock.UD_CAL+ MOVE_HORIZONTAL(inwards)+MOVE_HORIZONTAL(outwards) + EMERGENCY;
+  D_CAL = but_press(b_reset).but_release(b_reset).D_UNC + UNDOCK+ MOVE_WHILE_DOCKED + EMERGENCY;
 
-  EMERGENCY = cub_horizontal.but_press(b_resume).but_release(b_resume).D_CAL;
+  EMERGENCY = but_press(b_stop).but_release(b_stop).cub_horizontal.but_press(b_resume).but_release(b_resume).cb_horizontal.D_CAL;
 
-  UD_CAL = cb_horizontal;
+  UNDOCK = but_press(b_undock).but_release(b_undock).sum p:SH.(p == h_initial) -> cs_horizontal(h_initial).cd_undock.UND_CAL <> cs_horizontal(p).D_CAL;
 
-  init hide({s_horizontal, s_vertical, m_vertical, m_horizontal, m_vertical_stop, m_horizontal_stop, b_vertical, ub_vertical, b_horizontal, ub_horizontal, s_dock, s_undock, s_nop, cs_horizontal, cs_vertical, cm_vertical, cm_horizontal, cm_vertical_stop, cm_horizontal_stop, cb_vertical, cub_vertical, cb_horizontal, cub_horizontal, cs_dock, cs_undock, cs_nop},
+  MOVE_WHILE_DOCKED = but_press(b_up).sum p: SV.(p == v_mid) -> cs_vertical(v_mid).(START_MOVING_HORIZONTAL(h_outer, b_up, inwards) + DONT_MOVE_HORIZONTAL(h_outer, b_up)) <> ((p == v_below || p == v_lowest)-> cs_vertical(p).START_MOVING_VERTICAL(v_mid, b_up, up) <> cs_vertical(p).but_release(b_up))
+  +
+  but_press(b_down).sum p: SV.(p == v_mid) -> cs_vertical(v_mid).(START_MOVING_HORIZONTAL(h_initial, b_down, outwards) + DONT_MOVE_HORIZONTAL(h_initial, b_down)) <> ((p == v_upper || p == v_above)-> cs_vertical(p).START_MOVING_VERTICAL(v_mid, b_down, down) <> cs_vertical(p).but_release(b_down))
+  ;
+
+  UND_CAL = cs_dock.D_CAL + (MOVE_VERTICAL(up) + MOVE_VERTICAL(down)).UND_CAL;
+
+  init hide({s_horizontal, s_vertical, m_vertical, m_horizontal, m_vertical_stop, m_horizontal_stop, b_vertical, ub_vertical, b_horizontal, ub_horizontal, s_dock, s_undock, s_nop, cs_horizontal, cs_vertical, cm_vertical, cm_horizontal, cm_vertical_stop, cm_horizontal_stop, cb_vertical, cub_vertical, cb_horizontal, cub_horizontal, cs_dock, cs_undock, cs_nop, d_undock, cd_undock},
   allow({
   sense_horizontal,
   sense_vertical,
   move_horizontal,
   move_vertical,
-  dock, undock, nop,
+  sense_dock, sense_undock, undock, nop,
   motor_vertical_stop, motor_horizontal_stop,
   brake_vertical, unbrake_vertical, brake_horizontal, unbrake_horizontal,
   but_press, but_release
@@ -95,14 +105,15 @@ proc
   s_vertical|cs_vertical->sense_vertical,
   m_horizontal|cm_horizontal->move_horizontal,
   m_vertical|cm_vertical->move_vertical,
-  s_dock|cs_dock->dock,
-  s_undock|cs_undock->undock,
+  s_dock|cs_dock->sense_dock,
+  s_undock|cs_undock->sense_undock,
   s_nop|cs_nop->nop,
   m_vertical_stop|cm_vertical_stop->motor_vertical_stop,
   m_horizontal_stop|cm_horizontal_stop->motor_horizontal_stop,
   b_vertical|cb_vertical->brake_vertical,
   ub_vertical|cub_vertical -> unbrake_vertical,
   b_horizontal|cb_horizontal->brake_horizontal,
-  ub_horizontal|cub_horizontal -> unbrake_horizontal
+  ub_horizontal|cub_horizontal -> unbrake_horizontal,
+  d_undock| cd_undock -> undock
    },
-  C_UNC || BV || BH || MV || MH || S)));
+  C_UNC || BV || BH || MV || MH || S || D)));
