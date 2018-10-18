@@ -1,0 +1,1 @@
+[true*.sense_dock.(!(sense_horizontal(h_initial) || sense_vertical(v_upper) || sense_vertical(v_above)))*.undock] false

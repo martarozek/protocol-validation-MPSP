@@ -1,0 +1,1 @@
+[(!sense_dock)*.(sense_dock.(!undock)*.undock.(!sense_dock)*)*.emergency] false
