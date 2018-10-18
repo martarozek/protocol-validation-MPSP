@@ -1,0 +1,1 @@
+[true*.but_press(b_up).sense_vertical(v_mid)]<(!sense_horizontal(h_outer))*.move_horizontal(inwards)> true
