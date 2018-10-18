@@ -1,0 +1,1 @@
+forall b1, b2: BTN.[but_press(b1).(!but_release(b1))*.but_press(b2)] false
