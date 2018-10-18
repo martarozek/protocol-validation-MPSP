@@ -85,7 +85,7 @@ proc
   )
   ;
 
-  UND_CAL = cs_dock.D_CAL + (MOVE_VERTICAL(up) + MOVE_VERTICAL(down)).UND_CAL;
+  UND_CAL = (cs_dock.sum p: DV. (p == v_upper || p == v_above).cs_vertical(p).cd_undock. UND_CAL <> cs_vertical(p).D_CAL) + (MOVE_VERTICAL(up) + MOVE_VERTICAL(down)).UND_CAL;
 
   init hide({s_horizontal, s_vertical, m_vertical, m_horizontal, m_vertical_stop, m_horizontal_stop, b_vertical, ub_vertical, b_horizontal, ub_horizontal, s_dock, s_undock, s_nop, cs_horizontal, cs_vertical, cm_vertical, cm_horizontal, cm_vertical_stop, cm_horizontal_stop, cb_vertical, cub_vertical, cb_horizontal, cub_horizontal, cs_dock, cs_undock, cs_nop, d_undock, cd_undock},
   allow({
