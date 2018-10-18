@@ -1,1 +1,1 @@
-[(!sense_vertical(v_mid))*.move_horizontal(inwards)] false
+[true*.!sense_vertical(v_mid).sense_horizontal(h_initial).move_horizontal(inwards)] false
