@@ -1,1 +1,1 @@
-[true*.sense_horizontal(h_initial).(!(sense_horizontal(h_middle)))*.but_press(b_down).(!sense_vertical(v_lowest))*]<move_vertical(down)> true
+[true*.sense_horizontal(h_initial).(!(sense_horizontal(h_middle)))*.but_press(b_down)]<(!sense_vertical(v_lowest))*.move_vertical(down)> true
