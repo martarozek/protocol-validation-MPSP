@@ -1,0 +1,1 @@
+[true*.sense_dock.(!sense_undock)*.cs_vertical(v_mid).cub_vertical.cm_vertical(up)] false
