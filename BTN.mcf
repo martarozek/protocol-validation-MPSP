@@ -1,2 +1,2 @@
 forall b1, b2: BTN.[but_press(b1).(!but_release(b1))*.but_press(b2)] false &&
-forall b1, b2: BTN.[but_release(b1).(!but_press(b1))*.but_release(b2)] false
+forall b3, b4: BTN.[but_release(b3).(!but_press(b3))*.but_release(b4)] false

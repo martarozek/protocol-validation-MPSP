@@ -1,0 +1,2 @@
+[true*.(move_vertical(up) || move_vertical(down)).(!motor_vertical_stop)*.brake_vertical.(!motor_vertical_stop)]false &&
+[true*.(move_horizontal(inwards) || move_horizontal(outwards)).(!motor_horizontal_stop)*.brake_horizontal.(!motor_horizontal_stop)]false
