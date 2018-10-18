@@ -30,6 +30,7 @@ act
   sense_dock, sense_undock, undock, nop;
   motor_vertical_stop, motor_horizontal_stop;
   brake_vertical, unbrake_vertical, brake_horizontal, unbrake_horizontal;
+  emergency, unemergency;
 
 proc
   S = ((sum h:SH. s_horizontal(h)) + (sum v:SV. s_vertical(v)) + s_dock + s_undock + s_nop).S;
@@ -69,7 +70,7 @@ proc
 
   UNCALIBRATE = but_press(b_reset).but_release(b_reset).sum p:SH.(p == h_initial) -> cs_horizontal(h_initial).uncalibrate.D_UNC <> cs_horizontal(p).D_CAL;
 
-  EMERGENCY = but_press(b_stop).but_release(b_stop).cub_horizontal.but_press(b_resume).but_release(b_resume).cb_horizontal.D_CAL;
+  EMERGENCY = but_press(b_stop).but_release(b_stop).emergency.cub_horizontal.but_press(b_resume).but_release(b_resume).unemergency.cb_horizontal.D_CAL;
 
   UNDOCK = but_press(b_undock).but_release(b_undock).sum p:SH.(p == h_initial) -> cs_horizontal(h_initial).cd_undock.UND_CAL <> cs_horizontal(p).D_CAL;
 
@@ -97,7 +98,8 @@ proc
   motor_vertical_stop, motor_horizontal_stop,
   brake_vertical, unbrake_vertical, brake_horizontal, unbrake_horizontal,
   but_press, but_release,
-  calibrate, uncalibrate
+  calibrate, uncalibrate,
+  emergency, unemergency
   },
   comm({
   s_horizontal|cs_horizontal->sense_horizontal,

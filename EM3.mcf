@@ -1,0 +1,1 @@
+forall d: DH.[true*.emergency.(!unemergency)*.(move_horizontal(d))] false
