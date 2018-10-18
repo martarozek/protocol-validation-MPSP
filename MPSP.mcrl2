@@ -47,9 +47,9 @@ proc
 
   START_MOVING_VERTICAL(s_position: SV, button: BTN, direction: DV) = sum p:SV.(p != s_position) -> cs_vertical(p).cm_vertical(direction).cub_vertical.(AUTO_STOP_VERTICAL(s_position, button, direction) + MANUAL_STOP_VERTICAL(button))<> cs_vertical(p).but_release(button);
 
-  MANUAL_STOP_VERTICAL(button: BTN) = but_release(button).cm_vertical_stop.cb_vertical;
+  MANUAL_STOP_VERTICAL(button: BTN) = but_release(button).cb_vertical.cm_vertical_stop;
 
-  AUTO_STOP_VERTICAL(s_position: SV, button: BTN, direction: DV) = sum p:SV.(p == s_position) -> cs_vertical(s_position).cm_vertical_stop.cb_vertical.but_release(button) <> cs_vertical(p).(AUTO_STOP_VERTICAL(s_position, button, direction) + MANUAL_STOP_VERTICAL(button)) + cs_vertical(s_position).cm_vertical_stop.cb_vertical.but_release(button);
+  AUTO_STOP_VERTICAL(s_position: SV, button: BTN, direction: DV) = sum p:SV.(p == s_position) -> cs_vertical(s_position).cb_vertical.cm_vertical_stop.but_release(button) <> cs_vertical(p).(AUTO_STOP_VERTICAL(s_position, button, direction) + MANUAL_STOP_VERTICAL(button)) + cs_vertical(s_position).cb_vertical.cm_vertical_stop.but_release(button);
 
 
 
@@ -57,9 +57,9 @@ proc
 
   START_MOVING_HORIZONTAL(s_position: SH, button: BTN, direction: DH) = sum p:SH.(p != s_position) -> cs_horizontal(p).cm_horizontal(direction).cub_horizontal.(AUTO_STOP_HORIZONTAL(s_position, button, direction) + MANUAL_STOP_HORIZONTAL(button)) <> cs_horizontal(p).but_release(button);
 
-  MANUAL_STOP_HORIZONTAL(button: BTN) = but_release(button).cm_horizontal_stop.cb_horizontal;
+  MANUAL_STOP_HORIZONTAL(button: BTN) = but_release(button).cb_horizontal.cm_horizontal_stop;
 
-  AUTO_STOP_HORIZONTAL(s_position: SH, button: BTN, direction: DH) = sum p:SH.(p == s_position) -> cs_horizontal(s_position).cm_horizontal_stop.cb_horizontal.but_release(button) <> cs_horizontal(p).(AUTO_STOP_HORIZONTAL(s_position, button, direction) + MANUAL_STOP_HORIZONTAL(button)) + cs_horizontal(s_position).cm_horizontal_stop.cb_horizontal.but_release(button);
+  AUTO_STOP_HORIZONTAL(s_position: SH, button: BTN, direction: DH) = sum p:SH.(p == s_position) -> cs_horizontal(s_position).cb_horizontal.cm_horizontal_stop.but_release(button) <> cs_horizontal(p).(AUTO_STOP_HORIZONTAL(s_position, button, direction) + MANUAL_STOP_HORIZONTAL(button)) + cs_horizontal(s_position).cb_horizontal.cm_horizontal_stop.but_release(button);
 
 
 
