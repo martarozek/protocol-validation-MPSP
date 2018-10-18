@@ -21,6 +21,7 @@ act
   cs_dock, cs_undock, cs_nop;
   but_press, but_release:     BTN;
   d_undock, cd_undock;
+  calibrate, uncalibrate;
 
   sense_horizontal: SH;
   sense_vertical:   SV;
@@ -74,9 +75,9 @@ proc
 
 
 
-  D_UNC = (MOVE_VERTICAL(up) + MOVE_VERTICAL(down)).D_UNC + but_press(b_reset).but_release(b_reset).D_CAL;
+  D_UNC = (MOVE_VERTICAL(up) + MOVE_VERTICAL(down)).D_UNC + but_press(b_reset).but_release(b_reset).calibrate.D_CAL;
 
-  D_CAL = but_press(b_reset).but_release(b_reset).D_UNC + UNDOCK+ MOVE_WHILE_DOCKED + EMERGENCY;
+  D_CAL = but_press(b_reset).but_release(b_reset).uncalibrate.D_UNC + UNDOCK+ MOVE_WHILE_DOCKED + EMERGENCY;
 
   EMERGENCY = but_press(b_stop).but_release(b_stop).cub_horizontal.but_press(b_resume).but_release(b_resume).cb_horizontal.D_CAL;
 
