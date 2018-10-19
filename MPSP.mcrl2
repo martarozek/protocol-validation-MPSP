@@ -43,7 +43,6 @@ proc
   BV = ub_vertical.b_vertical.BV;
   BH = ub_horizontal.b_horizontal.BH;
 
-  C_UNC = cs_dock.D_UNC;
   MOVE_VERTICAL(direction: DV) = (direction == up) ->but_press(b_up).START_MOVING_VERTICAL(v_upper, b_up, up) <> but_press(b_down).START_MOVING_VERTICAL(v_lowest, b_down, down);
 
   START_MOVING_VERTICAL(s_position: SV, button: BTN, direction: DV) = sum p:SV.(p != s_position) -> cs_vertical(p).cm_vertical(direction).cub_vertical.(AUTO_STOP_VERTICAL(s_position, button, direction) + MANUAL_STOP_VERTICAL(button))<> cs_vertical(p).but_release(button);
@@ -66,9 +65,9 @@ proc
 
   D_UNC = (MOVE_VERTICAL(up) + MOVE_VERTICAL(down)).D_UNC + but_press(b_reset).but_release(b_reset).calibrate.D_CAL;
 
-  D_CAL = UNCALIBRATE + UNDOCK+ MOVE_WHILE_DOCKED + EMERGENCY;
+  D_CAL = UNDOCK+ MOVE_WHILE_DOCKED.D_CAL + EMERGENCY;
 
-  UNCALIBRATE = but_press(b_reset).but_release(b_reset).sum p:SH.(p == h_initial) -> cs_horizontal(h_initial).uncalibrate.D_UNC <> cs_horizontal(p).D_CAL;
+  UNCALIBRATE = but_press(b_reset).but_release(b_reset).uncalibrate.UND_UNC;
 
   EMERGENCY = but_press(b_stop).but_release(b_stop).emergency.cub_horizontal.but_press(b_resume).but_release(b_resume).unemergency.cb_horizontal.D_CAL;
 
@@ -86,7 +85,9 @@ proc
   )
   ;
 
-  UND_CAL = (cs_dock.sum p: SV. (p == v_upper || p == v_above) -> cs_vertical(p).cd_undock. UND_CAL <> cs_vertical(p).D_CAL) + (MOVE_VERTICAL(up) + MOVE_VERTICAL(down)).UND_CAL;
+  UND_CAL = (cs_dock.sum p: SV. (p == v_upper || p == v_above) -> cs_vertical(p).cd_undock. UND_CAL <> cs_vertical(p).D_CAL) + (MOVE_VERTICAL(up) + MOVE_VERTICAL(down)).UND_CAL + UNCALIBRATE;
+
+  UND_UNC = (MOVE_VERTICAL(up) + MOVE_VERTICAL(down)).UND_CAL + (cs_dock.sum p: SV. (p == v_upper || p == v_above) -> cs_vertical(p).cd_undock. UND_UNC <> cs_vertical(p).D_UNC);
 
   init hide({s_horizontal, s_vertical, m_vertical, m_horizontal, m_vertical_stop, m_horizontal_stop, b_vertical, ub_vertical, b_horizontal, ub_horizontal, s_dock, s_undock, s_nop, cs_horizontal, cs_vertical, cm_vertical, cm_horizontal, cm_vertical_stop, cm_horizontal_stop, cb_vertical, cub_vertical, cb_horizontal, cub_horizontal, cs_dock, cs_undock, cs_nop, d_undock, cd_undock},
   allow({
@@ -117,4 +118,4 @@ proc
   ub_horizontal|cub_horizontal -> unbrake_horizontal,
   d_undock| cd_undock -> undock
    },
-  C_UNC || BV || BH || MV || MH || S || D)));
+  UND_UNC || BV || BH || MV || MH || S || D)));
