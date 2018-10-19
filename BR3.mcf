@@ -1,1 +1,3 @@
-[true*.(move_horizontal(inwards) || move_horizontal(outwards)) . (!unbrake_horizontal)] false && [true*.(move_vertical(up) || move_vertical(down)) . (!unbrake_vertical)] false
+[true*.(move_horizontal(inwards) || move_horizontal(outwards)).(!unbrake_horizontal)] false
+&&
+[true*.(move_vertical(up) || move_vertical(down)).(!unbrake_vertical)] false

@@ -1,1 +1,1 @@
-[true*.sense_dock.(sense_vertical(v_upper)|sense_vertical(v_above)).!undock] false
+[true*.sense_dock.(sense_vertical(v_upper) || sense_vertical(v_above)).!undock] false

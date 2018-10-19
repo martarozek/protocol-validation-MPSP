@@ -1,1 +1,1 @@
-[true*.but_press(b_up).(sense_vertical(v_lowest)|sense_vertical(v_below))]<(!sense_vertical(v_mid))*.move_vertical(up)> true
+[true*.but_press(b_up).(sense_vertical(v_lowest) || sense_vertical(v_below))]<(!sense_vertical(v_mid))*.move_vertical(up)> true

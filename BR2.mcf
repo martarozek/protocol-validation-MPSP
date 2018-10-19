@@ -1,1 +1,1 @@
-[true*.motor_vertical_stop.brake_vertical.(!move_vertical(up) && !move_vertical(down))*.unbrake_vertical ] false
+[true*.motor_vertical_stop.brake_vertical.(!move_vertical(up) && !move_vertical(down))*.unbrake_vertical] false

@@ -1,1 +1,1 @@
-[true*.but_release(b_resume)]<(!emergency)*.unemergency>true
+[true*.but_release(b_resume)]<(!emergency)*.unemergency> true
