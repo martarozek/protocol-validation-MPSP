@@ -1,1 +1,1 @@
-[(!calibrate)*.(calibrate.(!uncalibrate)*.uncalibrate.(!calibrate)*)*.but_press(b_up)]<(!calibrate)*.!sense_vertical(v_upper).move_vertical(up)> true
+[(!calibrate)*.(calibrate.(!uncalibrate)*.uncalibrate.(!calibrate)*)*.but_press(b_up)]<!sense_vertical(v_upper).move_vertical(up)> true
