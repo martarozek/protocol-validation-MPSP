@@ -1,1 +1,1 @@
-[true*.sense_dock.(!undock)*.sense_vertical(v_mid).unbrake_vertical.move_vertical(up)] false
+[true*.calibrate.(!undock)*.sense_vertical(v_mid).move_vertical(up)] false
