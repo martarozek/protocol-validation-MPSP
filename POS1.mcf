@@ -1,1 +1,2 @@
-[(!sense_dock)*.(sense_dock.(!undock)*.undock.(!sense_dock)*)*.sense_horizontal(h_middle)] false && [(!sense_dock)*.(sense_dock.(!undock)*.undock.(!sense_dock)*)*.sense_horizontal(h_outer)] false
+[(!sense_dock)*.(sense_dock.(!undock)*.undock.(!sense_dock)*)*.(sense_horizontal(h_middle) + sense_horizontal(h_outer))] false
+
